@@ -11,10 +11,12 @@ bb_imgs=[]
 bb_img=[]
 bb_acc=[]
 
+
 def get_kk_imgs(img:pg.Surface) -> dict[tuple[int, int], pg.Surface]:
     """
     引数：こうかとんのrotozoomした画像
     返り値：方向に合わせて処理された辞書型の画像
+    動作：引数の画像に対して様々な方向を向いている画像を辞書型にして返り値に送る
     """
     img_flip = pg.transform.flip(img, True, False)
     kk_dict={
@@ -47,6 +49,7 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     return bb_imgs,bb_accs
 
 
+#画面外に対しての処理
 def check_bound(rct:pg.rect)->tuple[bool,bool]:
     """
     引数：こうかとんrect or 爆弾rect
