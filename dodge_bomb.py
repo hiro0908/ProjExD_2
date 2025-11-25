@@ -22,7 +22,7 @@ def get_kk_imgs(img:pg.Surface) -> dict[tuple[int, int], pg.Surface]:
         ( 0,-5):pg.transform.rotozoom(img,270,1.0),
         (+5,-5):pg.transform.rotozoom(img_flip,45,1.0),
         (+5, 0):pg.transform.rotozoom(img_flip,0,1.0),
-        (+5,+5):pg.transform.rotozoom(img,135,1.0),
+        (+5,+5):pg.transform.rotozoom(img_flip,320,1.0),
         ( 0,+5):pg.transform.rotozoom(img,90,1.0),
         (-5,+5):pg.transform.rotozoom(img,45,1.0),
         (-5, 0):pg.transform.rotozoom(img,0,1.0),
