@@ -53,7 +53,7 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-        if kk_rct.collidedict(bb_rct):
+        if kk_rct.colliderect(bb_rct):
             print("ゲームオーバー")
             return
             
