@@ -11,8 +11,29 @@ bb_imgs=[]
 bb_img=[]
 bb_acc=[]
 
+def get_kk_imgs(img:pg.Surface) -> dict[tuple[int, int], pg.Surface]:
+    num=random.randint(0,360)
+    kk_dict={
+        ( 0, 0):pg.transform.rotozoom(img,180,1.0),
+        ( 0,-5):pg.transform.rotozoom(img,270,1.0),
+        (+5,-5):pg.transform.rotozoom(img,225,1.0),
+        (+5, 0):pg.transform.rotozoom(img,180,1.0),
+        (+5,+5):pg.transform.rotozoom(img,135,1.0),
+        ( 0,+5):pg.transform.rotozoom(img,90,1.0),
+        (-5,+5):pg.transform.rotozoom(img,45,1.0),
+        (-5, 0):pg.transform.rotozoom(img,0,1.0),
+        (-5,-5):pg.transform.rotozoom(img,315,1.0),
+    }
+    return kk_dict
 
+
+#ボール画像と速度生成
 def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    """
+    引数：なし
+    戻り値 ボールの画像listと速度のintlist
+    画像と速度値の生成処理を行ったものをリスト化した
+    """
     for r in range(1,11):
         bb_img=pg.Surface((20*r,20*r))
         pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
@@ -70,6 +91,7 @@ def main():
 
     #こうかとん   
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
+    kk_imgs = get_kk_imgs(kk_img)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
 
@@ -89,6 +111,8 @@ def main():
         pg.K_LEFT:(-5,0),
         pg.K_RIGHT:(5,0)
         }
+    
+
     
 
     while True:
@@ -112,6 +136,8 @@ def main():
             if key_lst[key]:
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
+        mv = tuple(sum_mv) 
+        kk_img = kk_imgs.get(mv, kk_imgs[(0,0)])   
         kk_rct.move_ip(sum_mv)
 
         old_center = bb_rct.center
