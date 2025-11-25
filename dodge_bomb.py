@@ -1,7 +1,7 @@
 import os
 import sys
 import pygame as pg
-
+import random 
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
@@ -10,11 +10,23 @@ os.chdir(os.path.dirname(os.path.abspath(__file__)))
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+
+    #こうかとん
     bg_img = pg.image.load("fig/pg_bg.jpg")    
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
+
     clock = pg.time.Clock()
+
+    #爆弾
+    bb_img=pg.Surface((20,20))#爆弾の初期化
+    pg.draw.circle(bb_img,(255,0,0),(10,10),10)
+    bb_img.set_colorkey((0,0,0))
+    bb_rct=bb_img.get_rect()
+    bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
+    vx=5
+    vy=5
     tmr = 0
     DELTA={
         pg.K_UP:(0,-5),
@@ -23,10 +35,12 @@ def main():
         pg.K_RIGHT:(5,0)
         }
     while True:
+        # bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-        screen.blit(bg_img, [0, 0]) 
+        screen.blit(bg_img, [0, 0])
+        screen.blit(bb_img,bb_rct) 
 
         key_lst = pg.key.get_pressed()
         sum_mv = [0, 0]
@@ -35,6 +49,7 @@ def main():
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
         kk_rct.move_ip(sum_mv)
+        bb_rct.move_ip(vx,vy)
         screen.blit(kk_img, kk_rct)
         pg.display.update()
         tmr += 1
