@@ -12,12 +12,16 @@ bb_img=[]
 bb_acc=[]
 
 def get_kk_imgs(img:pg.Surface) -> dict[tuple[int, int], pg.Surface]:
-    num=random.randint(0,360)
+    """
+    引数：こうかとんのrotozoomした画像
+    返り値：方向に合わせて処理された辞書型の画像
+    """
+    img_flip = pg.transform.flip(img, True, False)
     kk_dict={
-        ( 0, 0):pg.transform.rotozoom(img,180,1.0),
+        ( 0, 0):pg.transform.rotozoom(img_flip,0,1.0),
         ( 0,-5):pg.transform.rotozoom(img,270,1.0),
-        (+5,-5):pg.transform.rotozoom(img,225,1.0),
-        (+5, 0):pg.transform.rotozoom(img,180,1.0),
+        (+5,-5):pg.transform.rotozoom(img_flip,45,1.0),
+        (+5, 0):pg.transform.rotozoom(img_flip,0,1.0),
         (+5,+5):pg.transform.rotozoom(img,135,1.0),
         ( 0,+5):pg.transform.rotozoom(img,90,1.0),
         (-5,+5):pg.transform.rotozoom(img,45,1.0),
@@ -37,6 +41,7 @@ def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
     for r in range(1,11):
         bb_img=pg.Surface((20*r,20*r))
         pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_img.set_colorkey((0, 0, 0))
         bb_imgs.append(bb_img)
     bb_accs=[a for a in range(1,11)]
     return bb_imgs,bb_accs
@@ -56,6 +61,8 @@ def check_bound(rct:pg.rect)->tuple[bool,bool]:
         tate=False
     return yoko,tate
 
+
+#ゲームオーバー画面の処理
 def gameover(screen:pg.Surface)->None:
     """
     引数：スクリーン
