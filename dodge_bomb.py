@@ -2,15 +2,18 @@ import os
 import sys
 import pygame as pg
 import random 
+import time
 
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
-def check_bound(rct:pg.rect):
+
+
+def check_bound(rct:pg.rect)->tuple[bool,bool]:
     """
     引数：こうかとんrect or 爆弾rect
     戻り値：判定結果タプル(横座標,縦座標)
-
+    画面内ならTrue、画面外ならFalse
     """
     yoko=True
     tate=True
@@ -20,13 +23,32 @@ def check_bound(rct:pg.rect):
         tate=False
     return yoko,tate
 
+def gameover(screen:pg.Surface)->None:
+    #こうかとん画像ロード  
+    kk_over_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
+    kk_over_rct = kk_over_img.get_rect()
+    kk_over_rct.center = 300, 200
+
+    over_img=pg.Surface((WIDTH, HEIGHT))
+    pg.draw.rect(over_img,(0,0,0),(0,0,WIDTH, HEIGHT))
+    over_img.set_alpha(200)
+    fonto=pg.font.Font(None,80)
+    text=fonto.render("GAMEOVER",True,(255,255,255))
+    screen.blit(over_img, [0, 0])
+    screen.blit(text,[400,300])
+    screen.blit(kk_over_img,[300,300])
+    screen.blit(kk_over_img,[800,300])
+    pg.display.update()
+    time.sleep(5)
+
 
 def main():
     pg.display.set_caption("逃げろ！こうかとん")
     screen = pg.display.set_mode((WIDTH, HEIGHT))
+    bg_img = pg.image.load("fig/pg_bg.jpg") 
 
-    #こうかとん
-    bg_img = pg.image.load("fig/pg_bg.jpg")    
+
+    #こうかとん   
     kk_img = pg.transform.rotozoom(pg.image.load("fig/3.png"), 0, 0.9)
     kk_rct = kk_img.get_rect()
     kk_rct.center = 300, 200
@@ -48,13 +70,14 @@ def main():
         pg.K_LEFT:(-5,0),
         pg.K_RIGHT:(5,0)
         }
+    
+
     while True:
-        # bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
         if kk_rct.colliderect(bb_rct):
-            print("ゲームオーバー")
+            gameover(screen)
             return
             
         
