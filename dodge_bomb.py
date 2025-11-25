@@ -3,8 +3,22 @@ import sys
 import pygame as pg
 import random 
 
+
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+def check_bound(rct:pg.rect):
+    """
+    引数：こうかとんrect or 爆弾rect
+    戻り値：判定結果タプル(横座標,縦座標)
+
+    """
+    yoko=True
+    tate=True
+    if rct.left<0 or rct.right>WIDTH:
+        yoko=False
+    if rct.top<0 or rct.bottom>HEIGHT:
+        tate=False
+    return yoko,tate
 
 
 def main():
@@ -39,6 +53,11 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
+        if kk_rct.collidedict(bb_rct):
+            print("ゲームオーバー")
+            return
+            
+        
         screen.blit(bg_img, [0, 0])
         screen.blit(bb_img,bb_rct) 
 
@@ -49,8 +68,15 @@ def main():
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
         kk_rct.move_ip(sum_mv)
+        if check_bound(kk_rct)!=(True,True):
+            kk_rct.move_ip(-sum_mv[0],-sum_mv[1])#移動を０にする
         bb_rct.move_ip(vx,vy)
         screen.blit(kk_img, kk_rct)
+        yoko,tate=check_bound(bb_rct)
+        if not yoko:  # 横方向にはみ出ていたら
+            vx *= -1
+        if not tate:  # 縦方向にはみ出ていたら
+            vy *= -1
         pg.display.update()
         tmr += 1
         clock.tick(50)
