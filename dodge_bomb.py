@@ -7,6 +7,18 @@ import time
 
 WIDTH, HEIGHT = 1100, 650
 os.chdir(os.path.dirname(os.path.abspath(__file__)))
+bb_imgs=[]
+bb_img=[]
+bb_acc=[]
+
+
+def init_bb_imgs() -> tuple[list[pg.Surface], list[int]]:
+    for r in range(1,11):
+        bb_img=pg.Surface((20*r,20*r))
+        pg.draw.circle(bb_img, (255, 0, 0), (10*r, 10*r), 10*r)
+        bb_imgs.append(bb_img)
+    bb_accs=[a for a in range(1,11)]
+    return bb_imgs,bb_accs
 
 
 def check_bound(rct:pg.rect)->tuple[bool,bool]:
@@ -24,16 +36,24 @@ def check_bound(rct:pg.rect)->tuple[bool,bool]:
     return yoko,tate
 
 def gameover(screen:pg.Surface)->None:
+    """
+    引数：スクリーン
+    """
     #こうかとん画像ロード  
     kk_over_img = pg.transform.rotozoom(pg.image.load("fig/8.png"), 0, 0.9)
     kk_over_rct = kk_over_img.get_rect()
     kk_over_rct.center = 300, 200
 
+    #黒画面
     over_img=pg.Surface((WIDTH, HEIGHT))
     pg.draw.rect(over_img,(0,0,0),(0,0,WIDTH, HEIGHT))
     over_img.set_alpha(200)
+
+    #ゲームオーバー文字
     fonto=pg.font.Font(None,80)
     text=fonto.render("GAMEOVER",True,(255,255,255))
+
+    #各画面の描写
     screen.blit(over_img, [0, 0])
     screen.blit(text,[400,300])
     screen.blit(kk_over_img,[300,300])
@@ -56,9 +76,8 @@ def main():
     clock = pg.time.Clock()
 
     #爆弾
-    bb_img=pg.Surface((20,20))#爆弾の初期化
-    pg.draw.circle(bb_img,(255,0,0),(10,10),10)
-    bb_img.set_colorkey((0,0,0))
+    bb_img,bb_accs=init_bb_imgs()#爆弾の初期化
+    bb_img = bb_imgs[0] 
     bb_rct=bb_img.get_rect()
     bb_rct.center=random.randint(0,WIDTH),random.randint(0,HEIGHT)
     vx=5
@@ -76,11 +95,14 @@ def main():
         for event in pg.event.get():
             if event.type == pg.QUIT: 
                 return
-        if kk_rct.colliderect(bb_rct):
+        if kk_rct.colliderect(bb_rct):#gameover処理
             gameover(screen)
             return
             
-        
+        speed=min(tmr//500,9)
+        avx=vx*bb_accs[speed]
+        avy=vy*bb_accs[speed]
+        bb_img=bb_imgs[speed]
         screen.blit(bg_img, [0, 0])
         screen.blit(bb_img,bb_rct) 
 
@@ -91,9 +113,16 @@ def main():
                 sum_mv[0]+=mv[0]
                 sum_mv[1]+=mv[1]
         kk_rct.move_ip(sum_mv)
+
+        old_center = bb_rct.center
+        bb_rct = bb_img.get_rect()
+        bb_rct.center = old_center
+
+
+        #ボール跳ね返り機能
         if check_bound(kk_rct)!=(True,True):
             kk_rct.move_ip(-sum_mv[0],-sum_mv[1])#移動を０にする
-        bb_rct.move_ip(vx,vy)
+        bb_rct.move_ip(avx,avy)
         screen.blit(kk_img, kk_rct)
         yoko,tate=check_bound(bb_rct)
         if not yoko:  # 横方向にはみ出ていたら
